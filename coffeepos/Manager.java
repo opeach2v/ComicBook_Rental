@@ -66,12 +66,59 @@ public class Manager {
 
     // TODO 메뉴별 판매 통계 보기
     public static void menuSellList() {
+        Scanner sc = new Scanner(System.in);
+        if(Payment.paymentListMap.isEmpty()) {
+            System.out.println("아직 판매한 기록이 없습니다.\n");
+            return;
+        }
+        int total = 0;
 
+        System.out.println("    [ 메뉴별 통계 보기 ]     ");
+        for(String name : Payment.PriceByMenu.keySet()) {
+            System.out.println("  " + name + " : " + Payment.PriceByMenu.get(name));
+            total += Payment.PriceByMenu.get(name);
+        }
+        System.out.println("  +모든 메뉴의 총 합 : " +total);
     }
 
     // TODO 기간별 판매 통계 보기
     public static void dateSellList() {
+        Scanner sc = new Scanner(System.in);
+        if(Payment.paymentListMap.isEmpty()) {
+            System.out.println("아직 판매한 기록이 없습니다.\n");  // 비어있을 시
+            return;
+        }
+        int sum;
+        int total = 0;
 
+        System.out.println("\n========= 기간 선택 =========");
+        for(String s : Payment.paymentListMap.keySet()) {   // 날짜 출력
+            System.out.println("   " +s);
+        }
+        while (true) {
+            System.out.print("통계가 보고 싶은 기간을 적으세요 >> ");
+            String choice = sc.next();
+            if(Payment.paymentListMap.containsKey(choice)) {  // 해당 날짜가 존재하면
+                for(int i = 0; i < Payment.paymentListMap.get(choice).size(); i++) {
+                    for(int n : Payment.paymentListMap.get(choice).get(i).keySet()) {
+                        System.out.println("\n [ " +i +"번째 결제 내역 ]");
+                        for(int j = 0; j < Payment.paymentListMap.get(choice).get(i).get(n).size(); j++) { // 해당 순서의 결제 내용 다 가져오기
+                            System.out.println("  " +Payment.paymentListMap.get(choice).get(i).get(n).get(0) +"  "
+                                    + Payment.paymentListMap.get(choice).get(i).get(n).get(1) +"개  "
+                                        +Payment.paymentListMap.get(choice).get(i).get(n).get(2) +"원");  // 출력
+                            sum = Integer.parseInt(Payment.paymentListMap.get(choice).get(i).get(n).get(1))
+                                    * Integer.parseInt(Payment.paymentListMap.get(choice).get(i).get(n).get(2));
+                            total += sum;
+                        }
+                    }
+                }
+                System.out.println();
+                System.out.println("           => 결제한 금액 : " +total +"원");
+            }
+            else {
+                System.out.println("존재하지 않는 기간입니다.\n다시 확인해서 정확하게 적어주세요.");
+            }
+        }
     }
 
     // 영수증 모두 보기

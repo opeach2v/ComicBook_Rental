@@ -12,6 +12,7 @@ public class Payment {
     // 현재까지 처리된 주문 내역 목록 (영수증 단위로 출력하기)
     // 날짜, {순서 {순서(1부터 n까지) {메뉴 이름, 판매 수량, 판매 가격}}} (초기화 되면 안 되는 내용)
     public static HashMap<String, ArrayList<HashMap<Integer, ArrayList<String>>>> paymentListMap = new HashMap<>();
+    public static HashMap<String, Integer> PriceByMenu = new HashMap<>();    // 메뉴별 가격 저장 (메뉴 이름, 팔린 총 가격)
     public static int sumOfCreditCard;    // 카드로 결제한 모든 금액 저장
     public static int sumOfCash;    // 현금으로 결제한 모든 금액 저장
     public static int sumOfDrink;   // 음료의 모든 금액 저장
@@ -19,6 +20,15 @@ public class Payment {
 
     public Payment() {
 
+    }
+
+    public static void initPriceByMenu() {  // 메뉴별 판매 가격 초기화 (0원으로)
+        for(String menu : Menu.drinkMenus.keySet()) {
+            PriceByMenu.put(menu, 0);
+        }
+        for(String menu : Menu.desertMenus.keySet()) {
+            PriceByMenu.put(menu, 0);
+        }
     }
 
     public static void paymentPrint(int sum, HashMap<String, Integer> choiceList) {
@@ -37,9 +47,11 @@ public class Payment {
             // TODO 지금은 음료수, 디저트 총 가격을 여기서 더하지만 나중에 떨어뜨려놔야...
             if(Menu.drinkMenus.containsKey(name)) { // 음료 메뉴에 있는 거면
                 sumOfDrink += Menu.drinkMenus.get(name).getFirst() * choiceList.get(name);  // 곱한 걸 더해줌
+                PriceByMenu.put(name, PriceByMenu.getOrDefault(name, 0) + sumOfDrink);  // 해당 메뉴의 판매 가격을 계속 업데이트
             }
             else if(Menu.desertMenus.containsKey(name)) {   // 디저트 메뉴에 있는 거면
                 sumOfDesert += Menu.desertMenus.get(name).getFirst() * choiceList.get(name);
+                PriceByMenu.put(name, PriceByMenu.getOrDefault(name, 0) + sumOfDesert);
             }
         }
         System.out.println("\n  * 총 금액: " +sum +"\n");
