@@ -23,35 +23,41 @@ public class Payment {
     }
 
     public static void initPriceByMenu() {  // 메뉴별 판매 가격 초기화 (0원으로)
-        for(String menu : Menu.drinkMenus.keySet()) {
-            PriceByMenu.put(menu, 0);
+        for(int idx : Menu.drinkMenus.keySet()) {
+            for(String menu : Menu.drinkMenus.get(idx).keySet()) PriceByMenu.put(menu, 0);
         }
-        for(String menu : Menu.desertMenus.keySet()) {
-            PriceByMenu.put(menu, 0);
+        for(int idx : Menu.desertMenus.keySet()) {
+            for(String menu : Menu.desertMenus.get(idx).keySet()) PriceByMenu.put(menu, 0);
         }
     }
 
-    public static void paymentPrint(int sum, HashMap<String, Integer> choiceList) {
+    public static void paymentPrint(int sum, HashMap<String, ArrayList<Integer>> choiceList) {
         int idx = 1;
-        ArrayList<String> list = new ArrayList<>();
         System.out.println("\n=============== 결제 ===============");
         System.out.println("  * 선택한 메뉴");
         for(String name : choiceList.keySet()) {
-            System.out.println("   " +name + " : " +choiceList.get(name) +"개   " +(Menu.getPrice(name) * choiceList.get(name)) +"원");
+            ArrayList<String> list = new ArrayList<>();
+            System.out.println("   " +name + "\t:  " +choiceList.get(name).get(1) +"개   " +(choiceList.get(name).get(0) * choiceList.get(name).get(1)) +"원");
             list.add(name);
-            list.add(String.valueOf(choiceList.get(name)));
-            list.add(String.valueOf(Menu.getPrice(name) * choiceList.get(name)));
+            list.add(String.valueOf(choiceList.get(name).get(1)));
+            list.add(String.valueOf(choiceList.get(name).get(0) * choiceList.get(name).get(1)));
             receiptList.put(idx, list);
             idx++;
 
             // TODO 지금은 음료수, 디저트 총 가격을 여기서 더하지만 나중에 떨어뜨려놔야...
-            if(Menu.drinkMenus.containsKey(name)) { // 음료 메뉴에 있는 거면
-                sumOfDrink += Menu.drinkMenus.get(name).getFirst() * choiceList.get(name);  // 곱한 걸 더해줌
-                PriceByMenu.put(name, PriceByMenu.getOrDefault(name, 0) + sumOfDrink);  // 해당 메뉴의 판매 가격을 계속 업데이트
+            for(int num : Menu.drinkMenus.keySet()) {
+                if(Menu.drinkMenus.get(num).containsKey(name)) { // 음료 메뉴에 있는 거면
+                    sumOfDrink += (choiceList.get(name).get(0) * choiceList.get(name).get(1));  // 곱한 걸 더해줌
+                    PriceByMenu.put(name, PriceByMenu.getOrDefault(name, 0) + sumOfDrink);  // 해당 메뉴의 판매 가격을 계속 업데이트
+                }
+                else break;
             }
-            else if(Menu.desertMenus.containsKey(name)) {   // 디저트 메뉴에 있는 거면
-                sumOfDesert += Menu.desertMenus.get(name).getFirst() * choiceList.get(name);
-                PriceByMenu.put(name, PriceByMenu.getOrDefault(name, 0) + sumOfDesert);
+            for(int num : Menu.desertMenus.keySet()) {
+                if(Menu.desertMenus.get(num).containsKey(name)) {   // 디저트 메뉴에 있는 거면
+                    sumOfDesert += (choiceList.get(name).get(0) * choiceList.get(name).get(1));
+                    PriceByMenu.put(name, PriceByMenu.getOrDefault(name, 0) + sumOfDesert);
+                }
+                else break;
             }
         }
         System.out.println("\n  * 총 금액: " +sum +"\n");
@@ -60,7 +66,7 @@ public class Payment {
 
         Scanner sc = new Scanner(System.in);
         while(true) {
-            System.out.println("   >> ");
+            System.out.print("   >> ");
             int choice = sc.nextInt();
 
             if(choice == 1) {
@@ -69,6 +75,7 @@ public class Payment {
             }
             else if(choice == 2) {
                 Main.mainPrint();
+                // TODO 다시 수량 취소 돌려 놔야 함 (아 복잡해졋어 나중에..)
                 break;
             }
             else System.out.println("\n다시 입력해주세요:)");
@@ -82,15 +89,17 @@ public class Payment {
         System.out.println("===========================");
         Scanner sc = new Scanner(System.in);
         while(true) {
-            System.out.println("   >> ");
+            System.out.print("   >> ");
             int choice = sc.nextInt();
 
             if(choice == 1) {
                 creditCard(sum);
+                Main.mainPrint();
                 break;
             }
             else if(choice == 2) {
                 cash(sum);
+                Main.mainPrint();
                 break;
             }
             else System.out.println("1과 2 중 다시 선택해주세요.");
@@ -120,41 +129,40 @@ public class Payment {
             cash = sc.nextInt();
             cashSum += cash;
 
-            if(cash >= sum) {
+            if(cashSum >= sum) {
                 System.out.println("\n  * 총 결제할 금액 : " +sum);
                 System.out.println("  * 넣은 금액 : " +cashSum);
-                System.out.println("  * 거스름돈 : " +(cash - sum));
+                System.out.println("  * 거스름돈 : " +(cashSum - sum));
                 break;
             }
             else {
-                System.out.println("돈이 부족합니다. 돈을 추가로 넣어주세요\n  >> ");
+                System.out.print("돈이 부족합니다. 돈을 추가로 넣어주세요\n  >> ");
             }
         }
         sumOfCash += sum;
 
         System.out.println("\n 결제가 완료되었습니다:)");
-
-        cashSum = cash;
         // 잔돈 계산 후 출력(영수증에도 같이 출력되게)
         receipt(sum, cashSum);
     }
 
     // 영수증 출력 후 paymentListMap에 저장해야 함 (영수증 저장하면서 결제 시간 넣기)
-    public static void receipt(int sum, int cash) {
+    public static void receipt(int sum, int cashSum) {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String strDate = formatter.format(date);
 
         System.out.println("\n========== 영수증 ==========");
-        for(int i = 0; i < receiptList.size(); i++) {
-            System.out.println(" (" +(i + 1) +") " +receiptList.get(i).getFirst() +"  " +receiptList.get(i).get(1) +"개");   // 메뉴 이름 출력
-            System.out.println("    -> " +receiptList.get(i).getLast() +"원");
+        for(int i = 1; i <= receiptList.size(); i++) {
+            System.out.println(" (" +(i) +") " +receiptList.get(i).get(0) +"  " +receiptList.get(i).get(1) +"개");   // 메뉴 이름 출력
+            System.out.println("    -> " +receiptList.get(i).get(2) +"원");
         }
         System.out.println();
         System.out.println("\n  * 총 결제할 금액 : " +sum);
-        System.out.println("  * 결제한 금액 : " +cash);
-        System.out.println("  * 거스름돈 : " +(cash - sum));
+        System.out.println("  * 결제한 금액 : " +cashSum);
+        System.out.println("  * 거스름돈 : " +(cashSum - sum));
         System.out.println("===========================");
+        System.out.println(" 구매 감사합니다~!");
 
         ArrayList<HashMap<Integer, ArrayList<String>>> lists = new ArrayList<>();
         lists.add(receiptList);

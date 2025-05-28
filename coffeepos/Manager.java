@@ -9,33 +9,29 @@ public class Manager {
     // 관리자 메뉴
     public static void managerPrint() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("\n======== 관리자 모드 ========");
-        System.out.println("   1. 전체 주문 내역 보기");
-        System.out.println("   2. 메뉴별 판매 통계 보기");
-        System.out.println("   3. 기간별 판매 통계 보기");
-        System.out.println("   4. 영수증 모두 보기");
-        System.out.println("   5. 홈으로");
-        System.out.println("============================");
 
         while(true) {
-            System.out.println("   >> ");
+            System.out.println("\n======== 관리자 모드 ========");
+            System.out.println("   1. 전체 주문 내역 보기");
+            System.out.println("   2. 메뉴별 판매 통계 보기");
+            System.out.println("   3. 기간별 판매 통계 보기");
+            System.out.println("   4. 영수증 모두 보기");
+            System.out.println("   5. 홈으로");
+            System.out.println("============================");
+            System.out.print("   >> ");
             int choice = sc.nextInt();
 
             if(choice == 1) {
                 allSellList();
-                break;
             }
             else if(choice == 2) {
                 menuSellList();
-                break;
             }
             else if(choice == 3) {
                 dateSellList();
-                break;
             }
             else if(choice == 4) {
                 allReceipt();
-                break;
             }
             else if(choice == 5) {
                 Main.mainPrint();
@@ -102,14 +98,12 @@ public class Manager {
                 for(int i = 0; i < Payment.paymentListMap.get(choice).size(); i++) {
                     for(int n : Payment.paymentListMap.get(choice).get(i).keySet()) {
                         System.out.println("\n [ " +i +"번째 결제 내역 ]");
-                        for(int j = 0; j < Payment.paymentListMap.get(choice).get(i).get(n).size(); j++) { // 해당 순서의 결제 내용 다 가져오기
-                            System.out.println("  " +Payment.paymentListMap.get(choice).get(i).get(n).get(0) +"  "
-                                    + Payment.paymentListMap.get(choice).get(i).get(n).get(1) +"개  "
-                                        +Payment.paymentListMap.get(choice).get(i).get(n).get(2) +"원");  // 출력
-                            sum = Integer.parseInt(Payment.paymentListMap.get(choice).get(i).get(n).get(1))
-                                    * Integer.parseInt(Payment.paymentListMap.get(choice).get(i).get(n).get(2));
-                            total += sum;
-                        }
+                        System.out.println("\t" +Payment.paymentListMap.get(choice).get(i).get(n).get(0) +"  "
+                                + Payment.paymentListMap.get(choice).get(i).get(n).get(1) +"개  "
+                                +Payment.paymentListMap.get(choice).get(i).get(n).get(2) +"원");  // 출력
+                        sum = Integer.parseInt(Payment.paymentListMap.get(choice).get(i).get(n).get(1))
+                                * Integer.parseInt(Payment.paymentListMap.get(choice).get(i).get(n).get(2));
+                        total += sum;
                     }
                 }
                 System.out.println();
@@ -135,14 +129,12 @@ public class Manager {
                 System.out.println();
                 for(int i = 0; i < Payment.paymentListMap.get(s).size(); i++) { // 해당 기간의 첫 번째 결제부터
                     for(int n : Payment.paymentListMap.get(s).get(i).keySet()) {
-                        for(int j = 0; j < Payment.paymentListMap.get(s).get(i).get(n).size(); j++) {   // 해당 순서의 결제 내용 다 가져오기
-                            System.out.println("  " +Payment.paymentListMap.get(s).get(i).get(n).get(0) +"  "
+                        System.out.println("\t" +Payment.paymentListMap.get(s).get(i).get(n).get(0) +"  "
                                 + Payment.paymentListMap.get(s).get(i).get(n).get(1) +"개  "
-                                    +Payment.paymentListMap.get(s).get(i).get(n).get(2) +"원");  // 출력
-                            sum = Integer.parseInt(Payment.paymentListMap.get(s).get(i).get(n).get(1))
-                                        * Integer.parseInt(Payment.paymentListMap.get(s).get(i).get(n).get(2));
-                            total += sum;
-                        }
+                                +Payment.paymentListMap.get(s).get(i).get(n).get(2) +"원");  // 출력
+                        sum = Integer.parseInt(Payment.paymentListMap.get(s).get(i).get(n).get(1))
+                                * Integer.parseInt(Payment.paymentListMap.get(s).get(i).get(n).get(2));
+                        total += sum;
                     }
                 }
                 System.out.println();
@@ -150,6 +142,10 @@ public class Manager {
                 System.out.println();
                 System.out.println("└────────────────────────────────────────┘\n");
             }
+        }
+        else {
+            System.out.println("아직 판매한 기록이 없습니다.\n");
+            return;
         }
     }
 }

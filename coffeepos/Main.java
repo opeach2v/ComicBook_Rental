@@ -17,7 +17,7 @@ public class Main {
     // 메인 시스템 출력
     public static int mainPrint() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("====== 슬기's 카페 POS 시스템 ======");
+        System.out.println("\n====== 슬기's 카페 POS 시스템 ======");
         System.out.println("   1. 주문 하기");
         System.out.println("   2. 관리자 모드 접속");
         System.out.println("   3. 프로그램 종료");
@@ -37,6 +37,8 @@ public class Main {
                     break;
                 case 3:
                     check = -1;
+                    System.out.println("\n  종료되었습니다:)");
+                    break;
                 default:
                     System.out.println("  1 ~ 3번만 입력해주세요!!");
                     break;
